@@ -55,8 +55,8 @@ BUNDESLAND_FELDER = ("kirchensteuersatz", "pv_an_basis", "pv_ag")
 
 # Verifikationsstatus-Annotationen je Steuerjahr (kuratiert, siehe Vermerk).
 EST_JAHR_KOMMENTAR = {
-    2024: "    # ⚠ 2024 NICHT primärquellen-verifiziert (siehe DATENPRÜFUNG oben).",
-    2025: "    # ⚠ 2025 NICHT primärquellen-verifiziert (siehe DATENPRÜFUNG oben).",
+    2024: "    # ✅ 2024 final (GFB 11.784, BGBl. 2024 I Nr. 386) gegen BMF EStH 2024 verifiziert.",
+    2025: "    # ✅ 2025 (StFeG, BGBl. 2024 I Nr. 449) gegen BMF EStH 2025 verifiziert.",
     2026: "    # ✅ 2026 gegen §32a EStG (gesetze-im-internet, konsolidiert) verifiziert.",
 }
 
@@ -71,12 +71,16 @@ braucht (est_tarif, steuerjahr_parameter, Bundesländer-Sätze) als reine Dicts.
 ================================ DATENPRÜFUNG ================================
 Verifikationsstatus gegen Primärquellen:
 
-  ✅ 2026  — vollständig gegen Primärquellen verifiziert
-            (§32a EStG / gesetze-im-internet, BMF-PAP 2026 (PDF, W1/W2/W3),
-             SVBezGrV 2026, §3/§4 SolzG, Landes-KiStG).
-  ⚠ 2024 / 2025 ESt-Tarif — NICHT verifiziert, mutmaßlich teils falsch
-     (u.a. 2024 grundfreibetrag = 11604 obsolet; final 11784 €). Bewusst
-     identisch zum Upstream gehalten (Parität). Projektübergreifende Korrektur:
+  ✅ 2024 / 2025 / 2026 ESt-Tarif §32a Abs. 1 — vollständig gegen Primärquellen
+            verifiziert (2026-06-07):
+              2024 FINAL (GFB 11.784): BGBl. 2024 I Nr. 386 / BMF EStH 2024;
+              2025: StFeG (BGBl. 2024 I Nr. 449) / BMF EStH 2025;
+              2026: §32a EStG (gesetze-im-internet, konsolidiert).
+            Zusätzlich Kontinuitäts-Check an allen Zonengrenzen (Abzugsbeträge
+            stimmen auf den Cent mit dem Gesetzestext überein).
+  ✅ 2026 SV/PAP — BMF-PAP 2026 (PDF, W1/W2/W3), SVBezGrV 2026, §3/§4 SolzG,
+            Landes-KiStG.
+  Korrektur-Vorgang 2024/2025-ESt (erledigt 2026-06-07):
      g:/code/.mex/notes/2026-06-06-est-tarif-2024-2025-datenintegritaet.md
 =============================================================================
 """
