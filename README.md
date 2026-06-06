@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://cdn.jsdelivr.net/gh/L1nch-lab/lohnsteuer-bmf@main/assets/banner.svg" alt="lohnsteuer-bmf" width="100%">
+<img src="https://raw.githubusercontent.com/L1nch-lab/lohnsteuer-bmf/main/assets/banner.svg" alt="lohnsteuer-bmf" width="100%">
 
 **Lohn- und Einkommensteuer nach dem BMF-Programmablaufplan 2026: offline, typisiert, ohne externe Abhängigkeiten.**
 
