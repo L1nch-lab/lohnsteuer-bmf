@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 280" role="img" aria-label="lohnsteuer-bmf — Lohnsteuer und Einkommensteuer nach BMF-Programmablaufplan 2026">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1117"/>
+      <stop offset="1" stop-color="#161b22"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1200" height="280" rx="16" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1200" height="6" rx="3" fill="#3fb950"/>
+  <text x="600" y="118" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="76" font-weight="700" fill="#e6edf3">lohnsteuer-bmf</text>
+  <text x="600" y="172" text-anchor="middle" font-family="-apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="29" fill="#8b949e">Lohnsteuer &#183; Einkommensteuer &#183; BMF-Programmablaufplan 2026</text>
+  <text x="600" y="228" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="28" fill="#3fb950">pip install lohnsteuer-bmf</text>
+</svg>

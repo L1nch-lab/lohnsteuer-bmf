@@ -1,12 +1,21 @@
-# lohnsteuer-bmf
+<div align="center">
 
-**Lohn- und Einkommensteuer nach dem BMF-Programmablaufplan 2026 — offline, typisiert, ohne externe Abhängigkeiten.**
+<img src="https://cdn.jsdelivr.net/gh/L1nch-lab/lohnsteuer-bmf@main/assets/banner.svg" alt="lohnsteuer-bmf" width="100%">
+
+**Lohn- und Einkommensteuer nach dem BMF-Programmablaufplan 2026: offline, typisiert, ohne externe Abhängigkeiten.**
 
 [![PyPI](https://img.shields.io/pypi/v/lohnsteuer-bmf.svg)](https://pypi.org/project/lohnsteuer-bmf/)
 [![Python](https://img.shields.io/pypi/pyversions/lohnsteuer-bmf.svg)](https://pypi.org/project/lohnsteuer-bmf/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/L1nch-lab/lohnsteuer-bmf/blob/main/LICENSE)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-`pip install` und loslegen — kein Code-Generator, kein PAP-XML-Parsing, keine
+[Installation](#installation) · [Schnellstart](#schnellstart) · [API](https://api.rechner-hub.de/steuerrechner-api/) · [PyPI](https://pypi.org/project/lohnsteuer-bmf/)
+
+</div>
+
+# lohnsteuer-bmf
+
+`pip install` und loslegen: kein Code-Generator, kein PAP-XML-Parsing, keine
 Laufzeit-Abhängigkeiten. Die Steuerwerte für 2026 sind gegen Primärquellen
 verifiziert (§32a EStG, BMF-PAP 2026, SV-Rechengrößenverordnung 2026).
 
