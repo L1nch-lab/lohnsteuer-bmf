@@ -25,6 +25,7 @@ Verifikationsstatus gegen Primärquellen:
 
 from typing import Any
 
+
 # 1. Einkommensteuer-Tarif (§32a EStG)
 
 EST_TARIF: dict[int, dict[str, Any]] = {
@@ -107,15 +108,15 @@ STEUERJAHR_PARAMETER: dict[int, dict[str, Any]] = {
         "anp": 1230.0,
         "sap": 36.0,
         "efa": 4260.0,
-        "kfb_voll": 9312.0,
-        "kfb_halb": 4656.0,
+        "kfb_voll": 9540.0,
+        "kfb_halb": 4770.0,
         "vspmax_sk1": 1900.0,
         "vspmax_sk3": 1900.0,
         "soli_freigrenze_einzel": 18130.0,
         "soli_freigrenze_zusammen": 36260.0,
-        "w1stkl5": 12485.0,
-        "w2stkl5": 31009.0,
-        "w3stkl5": 197034.0,
+        "w1stkl5": 13432.0,
+        "w2stkl5": 33380.0,
+        "w3stkl5": 222260.0,
     },
     2025: {
         "jahr": 2025,
@@ -145,9 +146,9 @@ STEUERJAHR_PARAMETER: dict[int, dict[str, Any]] = {
         "vspmax_sk3": 1900.0,
         "soli_freigrenze_einzel": 19950.0,
         "soli_freigrenze_zusammen": 39900.0,
-        "w1stkl5": 13498.0,
-        "w2stkl5": 33533.0,
-        "w3stkl5": 213210.0,
+        "w1stkl5": 13785.0,
+        "w2stkl5": 34240.0,
+        "w3stkl5": 222260.0,
     },
     2026: {
         "jahr": 2026,
@@ -187,22 +188,22 @@ STEUERJAHR_PARAMETER: dict[int, dict[str, Any]] = {
 # 3. Bundesländer — nur Kirchensteuer- und Pflegeversicherungssätze
 
 BUNDESLAENDER_DATA: dict[str, dict[str, float]] = {
-    "Baden-Württemberg": {"kirchensteuersatz": 8.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    "Bayern": {"kirchensteuersatz": 8.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    "Berlin": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    "Brandenburg": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    "Bremen": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    "Hamburg": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    "Hessen": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    "Mecklenburg-Vorpommern": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    "Niedersachsen": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    "Nordrhein-Westfalen": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    "Rheinland-Pfalz": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    "Saarland": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    "Sachsen": {"kirchensteuersatz": 9.0, "pv_an_basis": 2.3, "pv_ag": 1.3},
-    "Sachsen-Anhalt": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    "Schleswig-Holstein": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    "Thüringen": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    'Baden-Württemberg': {"kirchensteuersatz": 8.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    'Bayern': {"kirchensteuersatz": 8.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    'Berlin': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    'Brandenburg': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    'Bremen': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    'Hamburg': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    'Hessen': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    'Mecklenburg-Vorpommern': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    'Niedersachsen': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    'Nordrhein-Westfalen': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    'Rheinland-Pfalz': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    'Saarland': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    'Sachsen': {"kirchensteuersatz": 9.0, "pv_an_basis": 2.3, "pv_ag": 1.3},
+    'Sachsen-Anhalt': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    'Schleswig-Holstein': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    'Thüringen': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
 }
 
 
@@ -238,3 +239,4 @@ def get_pv_an_basis(bundesland: str) -> float:
 def get_pv_ag(bundesland: str) -> float:
     """PV-AG-Beitragssatz in Prozent (1.8, Sachsen: 1.3)."""
     return float(BUNDESLAENDER_DATA[bundesland]["pv_ag"])
+
