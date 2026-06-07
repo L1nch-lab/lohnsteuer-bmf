@@ -259,7 +259,12 @@ def _berechne_vorsorgepauschale(
 
     Bei gesetzlicher Krankenversicherung (PKV=0):
     VSP = VSPR (RV-Beitrag) + VSPKVPV (KV+PV-Beitrag)
-    Kein Hoechstbetrag — der 1.900/3.000 EUR Max gilt nur bei PKV.
+
+    BEWUSSTE PAP-VEREINFACHUNG (dokumentiert, kein Bug): Der §39b Abs. 2 Satz 5 Nr. 3
+    Buchstabe e EStG-Zweig (PAP-Modul MVSPHB: VSP = max(VSP, VSPR + min(VSPALV+VSPKVPV,
+    1.900))) fehlt hier. Real-Impact ~0 EUR (wirkt nur wo VSPKVPV < 1.900, dort zvE < GFB
+    → Lohnsteuer 0; Extremfall ~34 EUR/Jahr, bei Veranlagung ausgeglichen). Identisch zum
+    Upstream rechner-hub-api; Details: rechner-hub-api/docs/SOURCES_2026.md §2a.
 
     Bei SK6: kein RV-Abzug.
     """
@@ -275,7 +280,8 @@ def _berechne_vorsorgepauschale(
     pv_satz = _berechne_pv_satz(kinder, geburtsjahr, ist_sachsen)
     vspkvpv = kv_basis * (kv_satz + pv_satz) / 100
 
-    # Gesamte Vorsorgepauschale (kein Max bei GKV)
+    # Gesamte Vorsorgepauschale. ALV-Teilbetrag + §39b lit. e 1.900-EUR-Cap
+    # (PAP-Modul MVSPHB) bewusst weggelassen — siehe Docstring (~0 EUR Impact).
     return vspr + vspkvpv
 
 
