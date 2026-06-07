@@ -49,7 +49,7 @@ dev = [
 [project.urls]
 Homepage = "https://github.com/L1nch-lab/lohnsteuer-bmf"
 Repository = "https://github.com/L1nch-lab/lohnsteuer-bmf"
-"Hosted API" = "https://api.rechner-hub.de/steuerrechner-api/"
+"Hosted API" = "https://rechner-hub.de/steuerrechner-api/"
 Changelog = "https://github.com/L1nch-lab/lohnsteuer-bmf/blob/main/CHANGELOG.md"
 
 [tool.hatch.version]

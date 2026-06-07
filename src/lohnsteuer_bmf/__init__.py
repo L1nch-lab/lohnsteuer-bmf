@@ -21,7 +21,7 @@ Schnellstart (Top-Query: Steuerklasse 1, 5.000 €/Monat brutto, 2026)::
     print(ergebnis["lohnsteuer_monat"])
 
 Die breite Abdeckung (~58 weitere Rechner inkl. Sozialleistungen) gibt es als
-gehostete REST-API: https://api.rechner-hub.de/steuerrechner-api/
+gehostete REST-API: https://rechner-hub.de/steuerrechner-api/
 """
 
 from lohnsteuer_bmf.einkommensteuer import (

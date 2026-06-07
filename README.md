@@ -9,7 +9,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/L1nch-lab/lohnsteuer-bmf/blob/main/LICENSE)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-[Installation](#installation) · [Schnellstart](#schnellstart) · [API](https://api.rechner-hub.de/steuerrechner-api/) · [PyPI](https://pypi.org/project/lohnsteuer-bmf/)
+[Installation](#installation) · [Schnellstart](#schnellstart) · [API](https://rechner-hub.de/steuerrechner-api/) · [PyPI](https://pypi.org/project/lohnsteuer-bmf/)
 
 </div>
 
@@ -107,7 +107,7 @@ weitere deutsche Rechner inkl. Sozialleistungen (Bürgergeld, Wohngeld, Elternge
 Gewerbe-/Grunderwerb-/Erbschaftsteuer, Krypto, Photovoltaik u.v.m.), Batch-Endpoints
 und Gemeinde-Hebesätze — gibt es als gehostete REST-API:
 
-👉 **[api.rechner-hub.de/steuerrechner-api](https://api.rechner-hub.de/steuerrechner-api/)**
+👉 **[rechner-hub.de/steuerrechner-api](https://rechner-hub.de/steuerrechner-api/)**
 
 ## Genauigkeit & Haftung
 
@@ -156,6 +156,6 @@ What's included: monthly **Lohnsteuer** (BMF-PAP 2026), the **§32a income-tax t
 
 Need the full breadth (≈58 more German calculators incl. social benefits, batch
 endpoints, municipal trade-tax rates)? Use the hosted REST API:
-**[api.rechner-hub.de/steuerrechner-api](https://api.rechner-hub.de/steuerrechner-api/)**.
+**[rechner-hub.de/steuerrechner-api](https://rechner-hub.de/steuerrechner-api/)**.
 
 Not tax advice — provided as is. Licensed under [MIT](LICENSE).
