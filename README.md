@@ -94,9 +94,11 @@ kirchensteuer(10_000, "Bayern")            # 800.0
 
 Unterstützte Steuerjahre: **2024, 2025, 2026.**
 
-> **Hinweis zu 2024/2025:** Verifiziert und für den produktiven Einsatz empfohlen
-> ist das Steuerjahr **2026**; die Werte für 2024/2025 entsprechen dem Upstream-Stand
-> und werden noch gegen Primärquellen nachgeprüft.
+> **Stand der Verifikation (2026-06-07):** Alle drei Steuerjahre sind gegen amtliche
+> Primärquellen geprüft — 2024 final (Grundfreibetrag 11.784 €, BGBl. 2024 I Nr. 386 /
+> BMF EStH 2024), 2025 (Steuerfortentwicklungsgesetz, BGBl. 2024 I Nr. 449 / BMF EStH 2025),
+> 2026 (§32a EStG, gesetze-im-internet) — zusätzlich durch einen Kontinuitäts-Check an allen
+> Tarif-Zonengrenzen abgesichert.
 
 ## Brauchst du mehr als Lohn-/Einkommensteuer?
 
