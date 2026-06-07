@@ -18,8 +18,8 @@ Verifikationsstatus gegen Primärquellen:
             stimmen auf den Cent mit dem Gesetzestext überein).
   ✅ 2026 SV/PAP — BMF-PAP 2026 (PDF, W1/W2/W3), SVBezGrV 2026, §3/§4 SolzG,
             Landes-KiStG.
-  Korrektur-Vorgang 2024/2025-ESt (erledigt 2026-06-07):
-     g:/code/.mex/notes/2026-06-06-est-tarif-2024-2025-datenintegritaet.md
+  ℹ vspmax_sk1/sk3 = 1.900 € (§39b Abs. 2 Satz 5 Nr. 3 lit. e EStG, flacher Cap
+            alle Steuerklassen; korrigiert 2026-06-07 vom Legacy-Wert 3.000).
 =============================================================================
 """
 

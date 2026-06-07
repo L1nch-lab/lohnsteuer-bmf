@@ -263,8 +263,9 @@ def _berechne_vorsorgepauschale(
     BEWUSSTE PAP-VEREINFACHUNG (dokumentiert, kein Bug): Der §39b Abs. 2 Satz 5 Nr. 3
     Buchstabe e EStG-Zweig (PAP-Modul MVSPHB: VSP = max(VSP, VSPR + min(VSPALV+VSPKVPV,
     1.900))) fehlt hier. Real-Impact ~0 EUR (wirkt nur wo VSPKVPV < 1.900, dort zvE < GFB
-    → Lohnsteuer 0; Extremfall ~34 EUR/Jahr, bei Veranlagung ausgeglichen). Identisch zum
-    Upstream rechner-hub-api; Details: rechner-hub-api/docs/SOURCES_2026.md §2a.
+    → Lohnsteuer 0; Extremfall ~34 EUR/Jahr, bei Veranlagung ausgeglichen).
+    Beleg: §39b Abs. 2 Satz 5 Nr. 3 Buchstabe e EStG (gesetze-im-internet.de/estg/__39b.html)
+    + BMF-Programmablaufplan (Modul MVSPHB, Höchstbetragsberechnung).
 
     Bei SK6: kein RV-Abzug.
     """
