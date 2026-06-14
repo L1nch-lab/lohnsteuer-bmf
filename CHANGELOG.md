@@ -7,7 +7,18 @@ die Versionierung folgt [CalVer](https://calver.org/) (`JAHR.MINOR`, am Steuerja
 
 ## [Unreleased]
 
+## [2026.1] - 2026-06-14
+
+### Changed
+
+- Python 3.10 – 3.14 unterstützt (vorher nur 3.12+); `requires-python = ">=3.10"`.
+  Die CI-Matrix testet alle fünf Versionen auf Linux, Windows und macOS.
+  Keine Code- oder Berechnungsänderung — reine Kompatibilitätserweiterung.
+
+## [2026.0]
+
 ### Added
+
 - Erste Veröffentlichung: Lohnsteuer nach BMF-Programmablaufplan 2026
   (`berechne_lohnsteuer_pap`, `berechne_zve`).
 - Einkommensteuer-Tarif nach §32a EStG inkl. Splitting, Solidaritätszuschlag
@@ -15,5 +26,3 @@ die Versionierung folgt [CalVer](https://calver.org/) (`JAHR.MINOR`, am Steuerja
   `einkommensteuer_splitting`, `solidaritaetszuschlag`, `kirchensteuer`).
 - Steuerjahre 2024, 2025 und 2026.
 - Offline, zero dependencies, vollständig typisiert (PEP 561 `py.typed`).
-- Python 3.10 – 3.14 unterstützt (`requires-python = ">=3.10"`); CI-Matrix testet
-  alle fünf Versionen auf Linux, Windows und macOS.

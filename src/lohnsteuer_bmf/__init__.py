@@ -41,7 +41,7 @@ from lohnsteuer_bmf.lohnsteuer import (
 )
 from lohnsteuer_bmf.tarif import berechne_einkommensteuer_tarif
 
-__version__ = "2026.0"
+__version__ = "2026.1"
 
 __all__ = [
     "AKTUELLES_STEUERJAHR",
