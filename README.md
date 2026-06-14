@@ -8,6 +8,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/lohnsteuer-bmf.svg)](https://pypi.org/project/lohnsteuer-bmf/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/L1nch-lab/lohnsteuer-bmf/blob/main/LICENSE)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![CI](https://github.com/L1nch-lab/lohnsteuer-bmf/actions/workflows/ci.yml/badge.svg)](https://github.com/L1nch-lab/lohnsteuer-bmf/actions/workflows/ci.yml)
 
 [Installation](#installation) · [Schnellstart](#schnellstart) · [API](https://rechner-hub.de/steuerrechner-api/) · [PyPI](https://pypi.org/project/lohnsteuer-bmf/)
 
@@ -19,6 +20,12 @@
 Laufzeit-Abhängigkeiten. Die Steuerwerte für 2026 sind gegen Primärquellen
 verifiziert (§32a EStG, BMF-PAP 2026, SV-Rechengrößenverordnung 2026).
 
+- 🔌 **Zero Dependencies** — reine Standardbibliothek, nichts zu auditieren
+- 📴 **Offline** — keine Netzwerk-Calls, kein PAP-XML-Parsing zur Laufzeit
+- 🧮 **Primärquellen-verifiziert** — §32a EStG, BMF-PAP 2026, SV-RechGrV 2026
+- 🏷️ **Vollständig typisiert** — PEP 561 (`py.typed`), `mypy --strict`
+- 🐍 **Python 3.10 – 3.14** — getestet auf Linux, Windows und macOS
+
 > 🇬🇧 **English speakers:** scroll down for the [English section](#english).
 
 ---
@@ -29,7 +36,7 @@ verifiziert (§32a EStG, BMF-PAP 2026, SV-Rechengrößenverordnung 2026).
 pip install lohnsteuer-bmf
 ```
 
-Python ≥ 3.12. Keine Abhängigkeiten.
+Python ≥ 3.10 (getestet bis 3.14) · keine Abhängigkeiten.
 
 ## Schnellstart
 
@@ -151,8 +158,8 @@ print(result["lohnsteuer_monat"])  # 777.33  (monthly wage tax in EUR)
 
 What's included: monthly **Lohnsteuer** (BMF-PAP 2026), the **§32a income-tax tariff**
 (incl. spouse splitting, marginal/average rates), **solidarity surcharge** and
-**church tax**. Tax years 2024–2026 (2026 verified against primary sources;
-2024/2025 mirror upstream and are pending re-verification).
+**church tax**. Tax years 2024–2026 — all three verified against official primary
+sources (as of 2026-06-07). Python ≥ 3.10, zero dependencies.
 
 Need the full breadth (≈58 more German calculators incl. social benefits, batch
 endpoints, municipal trade-tax rates)? Use the hosted REST API:
