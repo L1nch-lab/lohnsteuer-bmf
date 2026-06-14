@@ -25,7 +25,6 @@ Verifikationsstatus gegen Primärquellen:
 
 from typing import Any
 
-
 # 1. Einkommensteuer-Tarif (§32a EStG)
 
 EST_TARIF: dict[int, dict[str, Any]] = {
@@ -188,22 +187,22 @@ STEUERJAHR_PARAMETER: dict[int, dict[str, Any]] = {
 # 3. Bundesländer — nur Kirchensteuer- und Pflegeversicherungssätze
 
 BUNDESLAENDER_DATA: dict[str, dict[str, float]] = {
-    'Baden-Württemberg': {"kirchensteuersatz": 8.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    'Bayern': {"kirchensteuersatz": 8.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    'Berlin': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    'Brandenburg': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    'Bremen': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    'Hamburg': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    'Hessen': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    'Mecklenburg-Vorpommern': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    'Niedersachsen': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    'Nordrhein-Westfalen': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    'Rheinland-Pfalz': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    'Saarland': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    'Sachsen': {"kirchensteuersatz": 9.0, "pv_an_basis": 2.3, "pv_ag": 1.3},
-    'Sachsen-Anhalt': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    'Schleswig-Holstein': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
-    'Thüringen': {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    "Baden-Württemberg": {"kirchensteuersatz": 8.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    "Bayern": {"kirchensteuersatz": 8.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    "Berlin": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    "Brandenburg": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    "Bremen": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    "Hamburg": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    "Hessen": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    "Mecklenburg-Vorpommern": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    "Niedersachsen": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    "Nordrhein-Westfalen": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    "Rheinland-Pfalz": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    "Saarland": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    "Sachsen": {"kirchensteuersatz": 9.0, "pv_an_basis": 2.3, "pv_ag": 1.3},
+    "Sachsen-Anhalt": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    "Schleswig-Holstein": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
+    "Thüringen": {"kirchensteuersatz": 9.0, "pv_an_basis": 1.8, "pv_ag": 1.8},
 }
 
 
@@ -239,4 +238,3 @@ def get_pv_an_basis(bundesland: str) -> float:
 def get_pv_ag(bundesland: str) -> float:
     """PV-AG-Beitragssatz in Prozent (1.8, Sachsen: 1.3)."""
     return float(BUNDESLAENDER_DATA[bundesland]["pv_ag"])
-

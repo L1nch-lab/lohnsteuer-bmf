@@ -7,7 +7,7 @@ name = "lohnsteuer-bmf"
 dynamic = ["version"]
 description = "Lohnsteuer & Einkommensteuer nach BMF-Programmablaufplan 2026 — offline, typisiert, zero dependencies."
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{ name = "L1nch-lab" }]
@@ -30,8 +30,11 @@ classifiers = [
     "Natural Language :: German",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Office/Business :: Financial :: Accounting",
     "Typing :: Typed",
 ]
@@ -62,7 +65,7 @@ packages = ["src/lohnsteuer_bmf"]
 include = ["src/lohnsteuer_bmf", "tests", "examples", "README.md", "LICENSE", "CHANGELOG.md"]
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py310"
 line-length = 100
 
 [tool.ruff.lint]
@@ -76,7 +79,7 @@ select = ["E", "F", "I", "UP", "B", "SIM", "ARG", "S"]
 known-first-party = ["lohnsteuer_bmf"]
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.10"
 strict = true
 files = ["src/lohnsteuer_bmf"]
 

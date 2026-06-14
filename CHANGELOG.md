@@ -15,3 +15,5 @@ die Versionierung folgt [CalVer](https://calver.org/) (`JAHR.MINOR`, am Steuerja
   `einkommensteuer_splitting`, `solidaritaetszuschlag`, `kirchensteuer`).
 - Steuerjahre 2024, 2025 und 2026.
 - Offline, zero dependencies, vollständig typisiert (PEP 561 `py.typed`).
+- Python 3.10 – 3.14 unterstützt (`requires-python = ">=3.10"`); CI-Matrix testet
+  alle fünf Versionen auf Linux, Windows und macOS.
