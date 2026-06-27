@@ -24,15 +24,14 @@ jobs:
       - run: ruff check .
       - run: ruff format --check .
       - run: mypy src/
-      - run: pytest -q --cov=lohnsteuer_bmf --cov-report=xml --cov-report=term-missing
+      - run: pytest -q --cov=lohnsteuer_bmf --cov-branch --cov-report=xml --cov-report=term-missing
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
         uses: codecov/codecov-action@v5
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.xml
           fail_ci_if_error: false
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   pip-audit:
     runs-on: ubuntu-latest
