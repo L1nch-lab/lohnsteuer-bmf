@@ -72,7 +72,9 @@ def _tarifzone(zve: float, jahr: int) -> dict[str, int | str]:
             return {"zone": i + 1, "name": name, "satz": satz}
         if zve <= grenze:
             return {"zone": i + 1, "name": name, "satz": satz}
-    return {"zone": 5, "name": "Reichensteuer", "satz": "45 %"}
+    # Unerreichbar: die letzte Zone returnt oben immer (i == len-1); nur als
+    # Fallback, falls _TARIFZONEN je leer wäre.
+    return {"zone": 5, "name": "Reichensteuer", "satz": "45 %"}  # pragma: no cover
 
 
 def berechne_einkommensteuer_tarif(

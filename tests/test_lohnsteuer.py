@@ -106,3 +106,51 @@ def test_zve_im_ergebnis() -> None:
         "zve_jahr",
         "vorsorgepauschale",
     }
+
+
+# --- berechne_zve: Steuerklassen-Sonderpfade (ANP/SAP-Abzug) ---
+
+
+def test_berechne_zve_sk6_kein_anp_sap() -> None:
+    """SK6 (zweites Dienstverhältnis): kein ANP/SAP → höheres zvE als SK1."""
+    assert berechne_zve(60000.0, steuerklasse=6) > berechne_zve(60000.0, steuerklasse=1)
+
+
+def test_berechne_zve_sk3_doppelter_sap() -> None:
+    """SK3 (Splitting): doppelter SAP → niedrigeres zvE als SK1."""
+    assert berechne_zve(60000.0, steuerklasse=3) < berechne_zve(60000.0, steuerklasse=1)
+
+
+# --- MST5_6: alle Stufen der Steuerklasse V/VI (Differenzmethode) ---
+
+
+def test_sk5_zve_null_keine_steuer() -> None:
+    """SK5, sehr niedriges Brutto → zvE=0 → MST5_6 gibt 0 zurück."""
+    r = berechne_lohnsteuer_pap(
+        brutto_jahr=1000.0,
+        steuerklasse=5,
+        bundesland="Nordrhein-Westfalen",
+        mit_kirchensteuer=False,
+        kinder=0,
+        geburtsjahr=1990,
+        kv_zusatzbeitrag=2.9,
+        ist_sachsen=False,
+        jahr=2026,
+    )
+    assert r["zve_jahr"] == 0.0
+    assert r["lohnsteuer_monat"] == 0.0
+
+
+def test_sk5_unter_w1() -> None:
+    """SK5, zvE ≤ W1 (14.071 €): unterste MST5_6-Zone, positive Steuer."""
+    assert _lst(18000.0, 5) > 0.0
+
+
+def test_sk5_zwischen_w1_und_w2() -> None:
+    """SK5, W1 < zvE ≤ W2 (34.939 €): Vergleichsberechnung greift, monoton steigend."""
+    assert _lst(45000.0, 5) > _lst(18000.0, 5)
+
+
+def test_sk5_reichensteuer_stufe() -> None:
+    """SK5, zvE > W3 (222.260 €): Spitzen- + Reichensteuer-Stufe (42 % / 45 %)."""
+    assert _lst(300000.0, 5) > _lst(60000.0, 5)

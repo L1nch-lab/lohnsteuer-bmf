@@ -81,6 +81,20 @@ def test_soli_voll_5komma5_prozent() -> None:
     assert solidaritaetszuschlag(est, jahr=2026) == pytest.approx(est * 0.055, abs=0.01)
 
 
+def test_soli_unbekanntes_jahr() -> None:
+    """Nicht unterstütztes Steuerjahr → ValueError mit Jahresangabe."""
+    with pytest.raises(ValueError, match="9999"):
+        solidaritaetszuschlag(50000.0, jahr=9999)
+
+
+def test_get_steuerjahr_parameter_unbekanntes_jahr() -> None:
+    """Datenschicht: unbekanntes Steuerjahr → KeyError."""
+    from lohnsteuer_bmf._data import get_steuerjahr_parameter
+
+    with pytest.raises(KeyError, match="9999"):
+        get_steuerjahr_parameter(9999)
+
+
 # ---------------------------------------------------------------------------
 # Kirchensteuer
 # ---------------------------------------------------------------------------
