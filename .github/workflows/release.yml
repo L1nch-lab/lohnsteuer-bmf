@@ -30,9 +30,30 @@ jobs:
     environment: pypi
     permissions:
       id-token: write   # OIDC für PyPI Trusted Publishing
+      contents: write   # GitHub-Release erstellen (nur bei Tag-Push)
     steps:
       - uses: actions/download-artifact@v5
         with:
           name: dist
           path: dist/
       - uses: pypa/gh-action-pypi-publish@release/v1
+
+      # GitHub-Release nur bei Tag-Push (nicht bei workflow_dispatch von einem Branch).
+      # Hält Tag + PyPI + Release synchron; Notizen aus dem CHANGELOG-Abschnitt der Version.
+      - name: Repo auschecken (für CHANGELOG)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/checkout@v5
+      - name: GitHub-Release aus Tag erstellen
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          notes=$(awk "/^## \[${version}\]/{f=1;next} /^## \[/{f=0} f" CHANGELOG.md)
+          if [ -z "$(printf '%s' "$notes" | tr -d '[:space:]')" ]; then
+            notes="Siehe [CHANGELOG.md](CHANGELOG.md)."
+          fi
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --latest \
+            --notes "$notes"
