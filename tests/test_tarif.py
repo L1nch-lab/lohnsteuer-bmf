@@ -50,6 +50,14 @@ def test_reichensteuer_zone5() -> None:
     assert r["grenzsteuersatz"] == pytest.approx(45.0, abs=0.5)
 
 
+def test_zve_null_kein_durchschnittssteuersatz() -> None:
+    """zvE = 0: Durchschnittssteuersatz + Belastungsquote = 0.0 (Division-durch-Null-Schutz)."""
+    r = berechne_einkommensteuer_tarif(0, jahr=2026)
+    assert r["einkommensteuer"] == 0.0
+    assert r["durchschnittssteuersatz"] == 0.0
+    assert r["belastungsquote"] == 0.0
+
+
 def test_envelope_keys() -> None:
     r = berechne_einkommensteuer_tarif(50000)
     assert {

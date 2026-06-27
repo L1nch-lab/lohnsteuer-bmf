@@ -154,3 +154,15 @@ def test_sk5_zwischen_w1_und_w2() -> None:
 def test_sk5_reichensteuer_stufe() -> None:
     """SK5, zvE > W3 (222.260 €): Spitzen- + Reichensteuer-Stufe (42 % / 45 %)."""
     assert _lst(300000.0, 5) > _lst(60000.0, 5)
+
+
+# --- PV-Beitragssatz: alle drei Kinder-Pfade (Kinderlos-Zuschlag / Basis / Abschlag) ---
+
+
+def test_pv_satz_ein_kind_basis() -> None:
+    """1 Kind → PV-Basissatz (kein Kinderlos-Zuschlag, kein Mehrkind-Abschlag).
+
+    Lohnsteuer ist strikt monoton in der Kinderzahl: 0 Kinder < 1 Kind < 2 Kinder
+    (weniger PV-Abzug in der Vorsorgepauschale → höheres zvE → höhere Steuer).
+    """
+    assert _lst(60000.0, 1, kinder=0) < _lst(60000.0, 1, kinder=1) < _lst(60000.0, 1, kinder=2)
