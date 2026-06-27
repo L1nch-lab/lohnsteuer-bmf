@@ -7,8 +7,11 @@
 [![PyPI](https://img.shields.io/pypi/v/lohnsteuer-bmf.svg)](https://pypi.org/project/lohnsteuer-bmf/)
 [![Python](https://img.shields.io/pypi/pyversions/lohnsteuer-bmf.svg)](https://pypi.org/project/lohnsteuer-bmf/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/L1nch-lab/lohnsteuer-bmf/blob/main/LICENSE)
-[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![CI](https://github.com/L1nch-lab/lohnsteuer-bmf/actions/workflows/ci.yml/badge.svg)](https://github.com/L1nch-lab/lohnsteuer-bmf/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/L1nch-lab/lohnsteuer-bmf/branch/main/graph/badge.svg)](https://codecov.io/gh/L1nch-lab/lohnsteuer-bmf)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Types: mypy strict](https://img.shields.io/badge/types-mypy%20strict-blue.svg)](https://mypy-lang.org/)
+[![Dependencies: 0](https://img.shields.io/badge/dependencies-0-brightgreen.svg)](https://github.com/L1nch-lab/lohnsteuer-bmf/blob/main/pyproject.toml)
 
 [Installation](#installation) · [Schnellstart](#schnellstart) · [API](https://rechner-hub.de/steuerrechner-api/) · [PyPI](https://pypi.org/project/lohnsteuer-bmf/)
 
