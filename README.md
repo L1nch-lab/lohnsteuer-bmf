@@ -5,6 +5,7 @@
 **Lohn- und Einkommensteuer nach dem BMF-Programmablaufplan 2026: offline, typisiert, ohne externe Abhängigkeiten.**
 
 [![PyPI](https://img.shields.io/pypi/v/lohnsteuer-bmf.svg)](https://pypi.org/project/lohnsteuer-bmf/)
+[![Downloads](https://img.shields.io/pypi/dm/lohnsteuer-bmf.svg)](https://pypistats.org/packages/lohnsteuer-bmf)
 [![Python](https://img.shields.io/pypi/pyversions/lohnsteuer-bmf.svg)](https://pypi.org/project/lohnsteuer-bmf/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/L1nch-lab/lohnsteuer-bmf/blob/main/LICENSE)
 [![CI](https://github.com/L1nch-lab/lohnsteuer-bmf/actions/workflows/ci.yml/badge.svg)](https://github.com/L1nch-lab/lohnsteuer-bmf/actions/workflows/ci.yml)
