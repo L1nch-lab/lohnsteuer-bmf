@@ -7,6 +7,25 @@ die Versionierung folgt [CalVer](https://calver.org/) (`JAHR.MINOR`, am Steuerja
 
 ## [Unreleased]
 
+## [2026.2] - 2026-08-03
+
+### Fixed
+
+- **Vorsorgepauschale rechnet jetzt mit dem ermäßigten KV-Satz 7,0 %** statt des
+  allgemeinen Satzes 7,3 % (§ 39b Abs. 2 Satz 5 Nr. 3 Buchst. b EStG i. V. m.
+  § 243 SGB V). Vorher war die Vorsorgepauschale um 0,3 % × min(Brutto, BBG-KV)
+  zu hoch und die Lohnsteuer damit systematisch zu niedrig — bis zu ~8 €/Monat
+  ab der Beitragsbemessungsgrenze. Verifiziert gegen den offiziellen
+  BMF-Steuerrechner. Danke an @Physik42 für die Meldung (#1).
+
+### Added
+
+- `berechne_zve()` akzeptiert einen neuen optionalen Parameter
+  `pv_basissatz: bool = False`: erzwingt in der Vorsorgepauschale den
+  PV-Basissatz nach § 55 Abs. 1 S. 1 SGB XI (ohne Kinderlosenzuschlag und
+  Kinder-Abschläge). Benötigt z. B. für das pauschalierte Nettoentgelt beim
+  Kurzarbeitergeld (§ 153 Abs. 1 S. 4 Nr. 3 SGB III). Default unverändert.
+
 ## [2026.1] - 2026-06-14
 
 ### Changed

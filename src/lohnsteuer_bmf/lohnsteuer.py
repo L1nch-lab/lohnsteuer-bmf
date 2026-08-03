@@ -22,7 +22,6 @@ from lohnsteuer_bmf.einkommensteuer import (
 from lohnsteuer_bmf.konstanten import (
     BBG_KV_PV_MONAT,
     BBG_RV_AV_MONAT,
-    KV_AN_BASIS,
     KV_ZUSATZBEITRAG_DEFAULT,
     PV_AN_BASIS,
     PV_AN_BASIS_SACHSEN,
@@ -54,6 +53,16 @@ _KFB_HALB = _P["kfb_halb"]
 _VSPMAX_SK1 = _P["vspmax_sk1"]
 _VSPMAX_SK3 = _P["vspmax_sk3"]
 
+# KV-AN-Satz fuer die VORSORGEPAUSCHALE: §39b Abs. 2 Satz 5 Nr. 3 Buchst. b EStG
+# schreibt den ERMAESSIGTEN Beitragssatz vor (§243 SGB V: 14,0 % -> AN-Haelfte
+# 7,0 %), NICHT den allgemeinen (14,6 %/7,3 %). Der Satz ist im Gesetz fixiert
+# (kein Jahreswert) — daher Code-Konstante statt Datenschicht. Der echte SV-Abzug
+# fuers Netto nutzt weiterhin KV_AN_BASIS (7,3) + Zusatzbeitrag/2; nur die
+# LSt-Typisierung rechnet ermaessigt. Fix 2026-07-14 (Upstream): vorher stand hier
+# KV_AN_BASIS -> LSt systematisch bis ~88-94 EUR/Jahr zu niedrig (BMF-Diff
+# 7,33/Monat ab BBG-KV). Verifiziert gegen bmf-steuerrechner.de (102 Faelle).
+_KV_AN_ERMAESSIGT = 7.0
+
 
 def berechne_zve(
     brutto_jahr: float,
@@ -62,6 +71,7 @@ def berechne_zve(
     geburtsjahr: int = 1985,
     ist_sachsen: bool = False,
     kv_zusatzbeitrag: float = KV_ZUSATZBEITRAG_DEFAULT,
+    pv_basissatz: bool = False,
 ) -> float:
     """Berechnet das zu versteuernde Einkommen (zvE) aus dem Bruttolohn.
 
@@ -83,6 +93,7 @@ def berechne_zve(
         kinder,
         geburtsjahr,
         ist_sachsen,
+        pv_basissatz,
     )
     return max(0.0, brutto_jahr - ztabfb - vsp)
 
@@ -254,6 +265,7 @@ def _berechne_vorsorgepauschale(
     kinder: int,
     geburtsjahr: int,
     ist_sachsen: bool,
+    pv_basissatz: bool = False,
 ) -> float:
     """Berechnet die Vorsorgepauschale nach PAP UPEVP/MVSPKVPV.
 
@@ -276,9 +288,11 @@ def _berechne_vorsorgepauschale(
     vspr = rv_basis * RV_AN / 100  # 9.3%
 
     # 2. KV + PV (MVSPKVPV) — gesetzlich versichert (PKV=0)
+    # ERMAESSIGTER Satz 7,0 % (§39b Abs. 2 S. 5 Nr. 3 b EStG i.V.m. §243 SGB V),
+    # nicht der allgemeine 7,3 %! Siehe _KV_AN_ERMAESSIGT-Kommentar oben.
     kv_basis = min(brutto_jahr, _BBGKV_JAHR)
-    kv_satz = KV_AN_BASIS + kv_zusatzbeitrag / 2  # AN-Haelfte
-    pv_satz = _berechne_pv_satz(kinder, geburtsjahr, ist_sachsen)
+    kv_satz = _KV_AN_ERMAESSIGT + kv_zusatzbeitrag / 2  # AN-Haelfte
+    pv_satz = _berechne_pv_satz(kinder, geburtsjahr, ist_sachsen, pv_basissatz)
     vspkvpv = kv_basis * (kv_satz + pv_satz) / 100
 
     # Gesamte Vorsorgepauschale. ALV-Teilbetrag + §39b lit. e 1.900-EUR-Cap
@@ -286,9 +300,18 @@ def _berechne_vorsorgepauschale(
     return vspr + vspkvpv
 
 
-def _berechne_pv_satz(kinder: int, geburtsjahr: int, ist_sachsen: bool) -> float:
-    """PV-AN-Beitragssatz in Prozent (identisch mit brutto_netto.py)."""
+def _berechne_pv_satz(
+    kinder: int, geburtsjahr: int, ist_sachsen: bool, pv_basissatz: bool = False
+) -> float:
+    """PV-AN-Beitragssatz in Prozent (identisch mit brutto_netto.py).
+
+    pv_basissatz=True erzwingt den Basissatz nach § 55 Abs. 1 S. 1 SGB XI — ohne
+    Kinderlosenzuschlag und ohne Kinder-Abschlaege (§ 55 Abs. 3). Gebraucht fuer das
+    KUG-Leistungsentgelt: § 153 Abs. 1 S. 4 Nr. 3 SGB III schreibt genau diesen Satz vor.
+    """
     basis = PV_AN_BASIS_SACHSEN if ist_sachsen else PV_AN_BASIS
+    if pv_basissatz:
+        return basis
     alter_2026 = 2026 - geburtsjahr
 
     if kinder == 0 and alter_2026 > 23:

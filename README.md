@@ -61,8 +61,8 @@ ergebnis = berechne_lohnsteuer_pap(
 )
 
 print(ergebnis)
-# {'lohnsteuer_monat': 777.33, 'soli_monat': 0.0, 'kirchensteuer_monat': 0.0,
-#  'zve_jahr': 46464.0, 'vorsorgepauschale': 12270.0}
+# {'lohnsteuer_monat': 782.42, 'soli_monat': 0.0, 'kirchensteuer_monat': 0.0,
+#  'zve_jahr': 46644.0, 'vorsorgepauschale': 12090.0}
 ```
 
 ### Einkommensteuer-Tarif (§32a EStG)
@@ -156,7 +156,7 @@ result = berechne_lohnsteuer_pap(
     ist_sachsen=False,           # Saxony special rule
     jahr=2026,                   # tax year
 )
-print(result["lohnsteuer_monat"])  # 777.33  (monthly wage tax in EUR)
+print(result["lohnsteuer_monat"])  # 782.42  (monthly wage tax in EUR)
 ```
 
 What's included: monthly **Lohnsteuer** (BMF-PAP 2026), the **§32a income-tax tariff**

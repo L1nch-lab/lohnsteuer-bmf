@@ -53,7 +53,7 @@ def _lst(brutto: float, sk: int, **kw: object) -> float:
 
 def test_headline_stkl1_5000_2026() -> None:
     """Top-Query: Steuerklasse 1, 5.000 €/Monat, 2026."""
-    assert _lst(60000.0, 1) == pytest.approx(777.33, abs=0.01)
+    assert _lst(60000.0, 1) == pytest.approx(782.42, abs=0.01)
 
 
 def test_steuerklassen_ordnung() -> None:
@@ -166,3 +166,15 @@ def test_pv_satz_ein_kind_basis() -> None:
     (weniger PV-Abzug in der Vorsorgepauschale → höheres zvE → höhere Steuer).
     """
     assert _lst(60000.0, 1, kinder=0) < _lst(60000.0, 1, kinder=1) < _lst(60000.0, 1, kinder=2)
+
+
+def test_berechne_zve_pv_basissatz_ignoriert_kinder() -> None:
+    """pv_basissatz=True erzwingt § 55 Abs. 1 S. 1 SGB XI: weder Kinderlos-Zuschlag
+    noch Mehrkind-Abschläge — zvE ist von der Kinderzahl unabhängig und identisch
+    mit dem 1-Kind-Fall (der ohnehin zum Basissatz rechnet)."""
+    kinderlos = berechne_zve(60000.0, steuerklasse=1, kinder=0, pv_basissatz=True)
+    viele_kinder = berechne_zve(60000.0, steuerklasse=1, kinder=4, pv_basissatz=True)
+    ein_kind_default = berechne_zve(60000.0, steuerklasse=1, kinder=1)
+    assert kinderlos == viele_kinder == ein_kind_default
+    # Ohne Flag greift der Kinderlos-Zuschlag → mehr VSP → niedrigeres zvE
+    assert berechne_zve(60000.0, steuerklasse=1, kinder=0) < kinderlos
