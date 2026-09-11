@@ -20,6 +20,7 @@ from lohnsteuer_bmf.einkommensteuer import (
     kirchensteuer as berechne_kirchensteuer,
 )
 from lohnsteuer_bmf.konstanten import (
+    AV_AN,
     BBG_KV_PV_MONAT,
     BBG_RV_AV_MONAT,
     KV_ZUSATZBEITRAG_DEFAULT,
@@ -53,11 +54,20 @@ _KFB_HALB = _P["kfb_halb"]
 _VSPMAX_SK1 = _P["vspmax_sk1"]
 _VSPMAX_SK3 = _P["vspmax_sk3"]
 
+# Deckel fuer den ALV-Teilbetrag der Vorsorgepauschale, PAP-Modul MVSPHB.
+# § 39b Abs. 2 Satz 5 Nr. 3 Buchst. e EStG, woertlich: der Teilbetrag "ist jedoch
+# nur anzusetzen, soweit er zusammen mit den Teilbetraegen nach den Buchstaben b
+# bis d einen Betrag in Hoehe von 1 900 Euro nicht uebersteigt".
+# Am Normtext verifiziert 2026-08-15 (gesetze-im-internet, builddate 20260804).
+# Wie _KV_AN_ERMAESSIGT ein im Gesetz fixierter Betrag, kein Jahreswert — daher
+# Code-Konstante statt Datenschicht-Parameter.
+_VSPHB_MAX = 1900.0
+
 # KV-AN-Satz fuer die VORSORGEPAUSCHALE: §39b Abs. 2 Satz 5 Nr. 3 Buchst. b EStG
 # schreibt den ERMAESSIGTEN Beitragssatz vor (§243 SGB V: 14,0 % -> AN-Haelfte
 # 7,0 %), NICHT den allgemeinen (14,6 %/7,3 %). Der Satz ist im Gesetz fixiert
-# (kein Jahreswert) — daher Code-Konstante statt Datenschicht. Der echte SV-Abzug
-# fuers Netto nutzt weiterhin KV_AN_BASIS (7,3) + Zusatzbeitrag/2; nur die
+# (kein Jahreswert) — daher Code-Konstante statt Datenschicht. Der echte SV-Abzug fuers
+# Netto nutzt weiterhin KV_AN_BASIS (7,3) + Zusatzbeitrag/2; nur die
 # LSt-Typisierung rechnet ermaessigt. Fix 2026-07-14 (Upstream): vorher stand hier
 # KV_AN_BASIS -> LSt systematisch bis ~88-94 EUR/Jahr zu niedrig (BMF-Diff
 # 7,33/Monat ab BBG-KV). Verifiziert gegen bmf-steuerrechner.de (102 Faelle).
@@ -78,11 +88,19 @@ def berechne_zve(
     PAP-konform: Brutto - ANP - SAP - EFA - Vorsorgepauschale.
     Nutzbar fuer alle Module die zvE aus Brutto benoetigen.
     """
+    # ⚠️ ZWEITE Stelle mit derselben Logik wie in `berechne_lohnsteuer_pap` — die
+    # ausfuehrliche Begruendung steht dort. Kurz: SAP ist in JEDER Steuerklasse
+    # 36 EUR, auch in III. § 39b Abs. 2 S. 5 Nr. 2 EStG verweist auf § 10c SATZ 1;
+    # die Verdopplung aus Satz 2 gilt nur der Zusammenveranlagung. Das Splitting
+    # sitzt im Tarif (KZTAB = 2), nicht im Freibetrag.
+    #
+    # Beim Fix am 2026-08-15 blieb genau diese Stelle zuerst stehen. Aufgefallen
+    # ist es NICHT hier, sondern in der Webapp-Cross-Validation: dort war der Fix
+    # schon drin, hier noch nicht, und Abfindung/KUG in StKl III liefen um bis zu
+    # 2,16 EUR auseinander. Wer die eine Stelle aendert, aendert immer beide.
     efa = _EFA if steuerklasse == 2 else 0.0
     if steuerklasse == 6:
         anp, sap = 0.0, 0.0
-    elif steuerklasse == 3:
-        anp, sap = _ANP, _SAP * 2
     else:
         anp, sap = _ANP, _SAP
 
@@ -94,6 +112,7 @@ def berechne_zve(
         geburtsjahr,
         ist_sachsen,
         pv_basissatz,
+        steuerklasse=steuerklasse,
     )
     return max(0.0, brutto_jahr - ztabfb - vsp)
 
@@ -108,6 +127,12 @@ def berechne_lohnsteuer_pap(
     kv_zusatzbeitrag: float,
     ist_sachsen: bool,
     jahr: int = 2026,
+    *,
+    pkv: bool = False,
+    pkpv_monat_cent: int = 0,
+    pkpvagz_monat_cent: int = 0,
+    alv_pflichtversichert: bool = True,
+    rv_pflichtversichert: bool = True,
 ) -> dict[str, float]:
     """Berechnet Lohnsteuer nach offiziellem BMF PAP.
 
@@ -121,19 +146,43 @@ def berechne_lohnsteuer_pap(
         kv_zusatzbeitrag: KV-Zusatzbeitrag in Prozent.
         ist_sachsen: Sachsen-Sonderregel PV.
         jahr: Steuerjahr.
+        pkv: True = ausschliesslich privat krankenversichert (PAP-Input PKV=1).
+        pkpv_monat_cent: PKV-Basisbeitrag, MONATSbetrag in Cent (PAP: PKPV).
+        pkpvagz_monat_cent: steuerfreier AG-Zuschuss, MONATSbetrag in Cent
+            (PAP: PKPVAGZ). Wird vom Beitrag abgezogen, Ergebnis nie negativ.
+        alv_pflichtversichert: False -> ALV=1, dann entfaellt der
+            Hoechstbetragszweig MVSPHB.
+        rv_pflichtversichert: False -> KRV=1, dann entfaellt der
+            Rentenversicherungs-Teilbetrag VSPR vollstaendig.
 
     Returns:
         Dict mit lohnsteuer_monat, soli_monat, kirchensteuer_monat.
     """
     # --- MZTABFB: Feste Abzuege (PAP-konform) ---
+    #
+    # ⚠️ SAP ist in JEDER Steuerklasse 36 EUR, auch in Klasse III. Bis 2026-08-15
+    # stand hier `_SAP * 2  # Verdoppelt bei Splitting` — das war die Logik der
+    # VERANLAGUNG, im Lohnsteuerabzug hat sie nichts verloren:
+    #
+    #   § 39b Abs. 2 S. 5 Nr. 2 EStG zieht "den Sonderausgaben-Pauschbetrag
+    #   (§ 10c SATZ 1) in den Steuerklassen I bis V" ab. Der Klammerverweis geht
+    #   auf Satz 1 = 36 EUR. § 10c Satz 2 (Verdopplung bei Zusammenveranlagung)
+    #   ist bewusst NICHT referenziert.
+    #
+    #   Das Splitting sitzt stattdessen im TARIF: § 39b Abs. 2 S. 6 rechnet
+    #   Steuerklasse III nach § 32a Abs. 5 — im PAP der Faktor KZTAB = 2 in
+    #   UPMLST (Anlage 1 S. 25). Wer zusaetzlich den Freibetrag verdoppelt,
+    #   zieht denselben Vorteil zweimal.
+    #
+    # Der PAP schreibt in MZTABFB (Anlage 1 S. 22) in jedem Zweig flach SAP = 36.
+    # Fehlerbild vor dem Fix: StKl III rechnete 36 EUR/Jahr zu viel ab, die
+    # Lohnsteuer lag rund 0,50 bis 0,83 EUR/Monat unter dem BMF-Rechner.
     efa = _EFA if steuerklasse == 2 else 0.0
     if steuerklasse == 6:
-        # SK6: Kein ANP, kein SAP (zweites Dienstverhaeltnis)
+        # SK6: Kein ANP, kein SAP — § 39b Abs. 2 S. 5 Nr. 1 und 2 gelten nur
+        # "in den Steuerklassen I bis V".
         anp = 0.0
         sap = 0.0
-    elif steuerklasse == 3:
-        anp = _ANP
-        sap = _SAP * 2  # Verdoppelt bei Splitting
     else:
         anp = _ANP
         sap = _SAP
@@ -155,6 +204,12 @@ def berechne_lohnsteuer_pap(
         kinder,
         geburtsjahr,
         ist_sachsen,
+        steuerklasse=steuerklasse,
+        pkv=pkv,
+        pkpv_monat_cent=pkpv_monat_cent,
+        pkpvagz_monat_cent=pkpvagz_monat_cent,
+        alv_pflichtversichert=alv_pflichtversichert,
+        rv_pflichtversichert=rv_pflichtversichert,
     )
 
     # --- MLSTJAHR: zvE berechnen ---
@@ -213,27 +268,40 @@ _W3STKL5 = _P["w3stkl5"]
 
 
 def _up5_6(zx: float, jahr: int) -> float:
-    """PAP UP5_6: Differenzmethode fuer SK V/VI.
+    """PAP UP5_6 (Anlage 1 S. 30): Differenzmethode fuer SK V/VI.
 
-    Berechnet: (EST(1.25*ZX) - EST(0.75*ZX)) * 2
-    Minimum: 14% von ZX.
+    Berechnet: (EST(1.25*ZX) - EST(0.75*ZX)) * 2, mindestens 14 % von ZX.
+
+    Die Trunkierung von `zx * 1.25` und `zx * 0.75` uebernimmt `einkommensteuer()`
+    selbst (`int(zve_raw)`, § 32a Abs. 1 EStG "abgerundetes zvE"). MIST dagegen
+    braucht sie hier: die PAP-Variablenliste fuehrt `MIST Mindeststeuer fuer die
+    Steuerklassen V und VI in EURO` — ohne Cent, anders als `X`, das dort
+    ausdruecklich "Euro, Cent (2 Dezimalstellen)" traegt. Das Diagramm setzt den
+    Euro-Marker entsprechend an `MIST = ZX * 0,14`.
     """
     st1 = float(einkommensteuer(zx * 1.25, jahr))
     st2 = float(einkommensteuer(zx * 0.75, jahr))
     diff = (st1 - st2) * 2
-    mist = zx * 0.14
+    mist = float(int(zx * 0.14))
     return max(diff, mist)
 
 
 def _mst5_6(zve: float, jahr: int) -> float:
-    """PAP MST5_6: Lohnsteuer fuer Steuerklasse V und VI.
+    """PAP MST5_6 (Anlage 1 S. 29): Lohnsteuer fuer Steuerklasse V und VI.
 
-    Stufenberechnung mit Schwellenwerten W1/W2/W3.
+    Stufenberechnung mit den Schwellenwerten W1/W2/W3, § 39b Abs. 2 S. 7 EStG.
+
+    ⚠️ Trunkierung nachgezogen 2026-08-15. `ZZX` und `ST` sind in der
+    PAP-Variablenliste "in Euro" deklariert, ohne Cent; im Diagramm haengt an
+    jedem ST-Aufschlag ein Euro-Marker. Ohne diese Abrundungen lag die Lohnsteuer
+    in StKl V/VI rund 0,03 bis 0,11 EUR/Monat ueber dem BMF-Rechner — klein, aber
+    systematisch in eine Richtung.
     """
     if zve <= 0:
         return 0.0
 
-    zzx = zve
+    # ZZX = X, deklariert "in Euro" -> auf volle Euro abgerundet.
+    zzx = float(int(zve))
 
     if zzx > _W2STKL5:
         # Stufe 1: UP5_6 auf W2
@@ -241,19 +309,19 @@ def _mst5_6(zve: float, jahr: int) -> float:
 
         if zzx > _W3STKL5:
             # Stufe 2+3: Spitzen- und Reichensteuer
-            st += (_W3STKL5 - _W2STKL5) * 0.42
-            st += (zzx - _W3STKL5) * 0.45
+            st = float(int(st + (_W3STKL5 - _W2STKL5) * 0.42))
+            st = float(int(st + (zzx - _W3STKL5) * 0.45))
         else:
             # Stufe 2: Spitzensteuersatz
-            st += (zzx - _W2STKL5) * 0.42
+            st = float(int(st + (zzx - _W2STKL5) * 0.42))
     else:
         # Unter W2: UP5_6 auf ZZX
         st = _up5_6(zzx, jahr)
 
         if zzx > _W1STKL5:
-            # Vergleichsberechnung: UP5_6(W1) + 42% Aufschlag
+            # Vergleichsberechnung: UP5_6(W1) + 42 % Aufschlag, kleinerer Wert gewinnt
             vergl = st
-            hoch = _up5_6(_W1STKL5, jahr) + (zzx - _W1STKL5) * 0.42
+            hoch = float(int(_up5_6(_W1STKL5, jahr) + (zzx - _W1STKL5) * 0.42))
             st = min(vergl, hoch)
 
     return st
@@ -266,38 +334,102 @@ def _berechne_vorsorgepauschale(
     geburtsjahr: int,
     ist_sachsen: bool,
     pv_basissatz: bool = False,
+    *,
+    steuerklasse: int = 1,
+    pkv: bool = False,
+    pkpv_monat_cent: int = 0,
+    pkpvagz_monat_cent: int = 0,
+    alv_pflichtversichert: bool = True,
+    rv_pflichtversichert: bool = True,
 ) -> float:
-    """Berechnet die Vorsorgepauschale nach PAP UPEVP/MVSPKVPV.
+    """Berechnet die Vorsorgepauschale nach PAP UPEVP + MVSPKVPV + MVSPHB.
 
-    Bei gesetzlicher Krankenversicherung (PKV=0):
-    VSP = VSPR (RV-Beitrag) + VSPKVPV (KV+PV-Beitrag)
+    Die drei PAP-Module stehen unten als eigene Bloecke, in derselben Reihenfolge
+    wie im Ablaufplan (Anlage 1, Seiten 26 / 27 / 28) — so ist der Code direkt
+    gegen die Diagramme pruefbar.
 
-    BEWUSSTE PAP-VEREINFACHUNG (dokumentiert, kein Bug): Der §39b Abs. 2 Satz 5 Nr. 3
-    Buchstabe e EStG-Zweig (PAP-Modul MVSPHB: VSP = max(VSP, VSPR + min(VSPALV+VSPKVPV,
-    1.900))) fehlt hier. Real-Impact ~0 EUR (wirkt nur wo VSPKVPV < 1.900, dort zvE < GFB
-    → Lohnsteuer 0; Extremfall ~34 EUR/Jahr, bei Veranlagung ausgeglichen).
-    Beleg: §39b Abs. 2 Satz 5 Nr. 3 Buchstabe e EStG (gesetze-im-internet.de/estg/__39b.html)
-    + BMF-Programmablaufplan (Modul MVSPHB, Höchstbetragsberechnung).
+    Rechtsgrundlage: § 39b Abs. 2 Satz 5 Nr. 3 EStG.
+        Buchst. a      -> VSPR   (Rentenversicherung)
+        Buchst. b - d  -> VSPKVPV (Kranken- + Pflegeversicherung)
+        Buchst. e      -> MVSPHB (Hoechstbetrag ueber die Arbeitslosenversicherung)
 
-    Bei SK6: kein RV-Abzug.
+    PKV (privat krankenversichert): `PKPV` ist der monatliche Basisbeitrag in Cent,
+    `PKPVAGZ` der steuerfreie AG-Zuschuss in Cent. Der PAP kennt 2026 nur PKV 0/1;
+    das alte "2 = privat mit Zuschuss" gibt es nicht mehr.
+
+    ABWEICHUNG, bewusst und unveraendert: Der PAP rundet an mehreren Stellen auf
+    volle Euro ab ("Euro"-Marker im Diagramm). Dieses Modul rechnet durchgehend in
+    float ohne diese Trunkierung — das ist der Stand des gesamten Moduls, nicht
+    dieser Funktion, und wird hier nicht einseitig geaendert.
     """
-    # 1. Rentenversicherung (VSPR) — PAP: abhaengig von KRV Input
-    # KRV=0 (RV-pflichtig): voller RV-Abzug, auch bei SK6
-    # Die VSP haengt NICHT von der Steuerklasse ab (PAP UPEVP)
-    rv_basis = min(brutto_jahr, _BBGRV_JAHR)
-    vspr = rv_basis * RV_AN / 100  # 9.3%
+    # --- UPEVP (S. 26): Rentenversicherungs-Teilbetrag -------------------------
+    # KRV ist der PAP-Merker fuer diesen Teilbetrag (Anlage 1 S. 5, wortgleich):
+    #   0 = pflichtversichert in der gesetzlichen RV ODER in einer berufsstaendischen
+    #       Versorgungseinrichtung ODER bei Befreiung freiwillig versichert;
+    #       es gilt die allgemeine Beitragsbemessungsgrenze
+    #   1 = wenn nicht 0
+    # Bei KRV = 1 setzt der Ablaufplan VSPR = 0 (S. 26, Ja-Zweig der Abfrage
+    # "KRV = 1"; Zweigrichtung an den Wortkoordinaten der Seite geprueft, nicht
+    # aus der Textextraktion geraten). Deckt sich mit § 39b Abs. 2 S. 5 Nr. 3
+    # Buchst. a EStG, der den Teilbetrag nur Arbeitnehmern gibt, die in der
+    # gesetzlichen RV pflichtversichert oder nach § 6 Abs. 1 Nr. 1 SGB VI
+    # befreit sind.
+    #
+    # Das ist der teuerste der drei Schalter: bei 60.000 EUR Brutto sind
+    # 9,3 % davon rund 5.580 EUR Vorsorgepauschale, die ersatzlos wegfallen.
+    if rv_pflichtversichert:
+        # ZRE4VPR wird hier mit BBGRVALV gekappt.
+        zre4vpr_rv = min(brutto_jahr, _BBGRV_JAHR)
+        vspr = zre4vpr_rv * RV_AN / 100  # 9,3 %
+    else:
+        vspr = 0.0
 
-    # 2. KV + PV (MVSPKVPV) — gesetzlich versichert (PKV=0)
-    # ERMAESSIGTER Satz 7,0 % (§39b Abs. 2 S. 5 Nr. 3 b EStG i.V.m. §243 SGB V),
-    # nicht der allgemeine 7,3 %! Siehe _KV_AN_ERMAESSIGT-Kommentar oben.
-    kv_basis = min(brutto_jahr, _BBGKV_JAHR)
-    kv_satz = _KV_AN_ERMAESSIGT + kv_zusatzbeitrag / 2  # AN-Haelfte
-    pv_satz = _berechne_pv_satz(kinder, geburtsjahr, ist_sachsen, pv_basissatz)
-    vspkvpv = kv_basis * (kv_satz + pv_satz) / 100
+    # --- MVSPKVPV (S. 27): Kranken- + Pflegeversicherung -----------------------
+    # ACHTUNG: Der PAP belegt ZRE4VPR hier NEU, mit der KV/PV-Grenze BBGKVPV.
+    # Der Wert aus UPEVP ist ab hier ueberschrieben — deshalb rechnet MVSPHB
+    # weiter unten seine eigene Kappung noch einmal.
+    zre4vpr_kv = min(brutto_jahr, _BBGKV_JAHR)
 
-    # Gesamte Vorsorgepauschale. ALV-Teilbetrag + §39b lit. e 1.900-EUR-Cap
-    # (PAP-Modul MVSPHB) bewusst weggelassen — siehe Docstring (~0 EUR Impact).
-    return vspr + vspkvpv
+    if pkv:
+        # Der STKL-6-Zweig haengt im PAP am PKV-Zweig, NICHT am Modul-Eingang.
+        # Bei gesetzlich Versicherten wird die Steuerklasse hier nicht geprueft;
+        # diese Asymmetrie steht so im Ablaufplan und wird nicht geglaettet.
+        if steuerklasse == 6:
+            vspkvpv = 0.0
+        else:
+            # Reihenfolge wie im PAP: erst der Zuschuss, dann der Beitrag.
+            # /100 ist die Cent-zu-Euro-Wandlung, *12 der Jahresbetrag.
+            pkpvagzj = pkpvagz_monat_cent * 12 / 100
+            vspkvpv = pkpv_monat_cent * 12 / 100
+            vspkvpv = vspkvpv - pkpvagzj
+            if vspkvpv < 0:
+                # Zuschuss groesser als Beitrag: keine negative Pauschale.
+                vspkvpv = 0.0
+    else:
+        # ERMAESSIGTER KV-Satz 7,0 % (§ 39b Abs. 2 S. 5 Nr. 3 b EStG i.V.m.
+        # § 243 SGB V), nicht der allgemeine 7,3 % — siehe _KV_AN_ERMAESSIGT.
+        kv_satz = _KV_AN_ERMAESSIGT + kv_zusatzbeitrag / 2  # AN-Haelfte
+        pv_satz = _berechne_pv_satz(kinder, geburtsjahr, ist_sachsen, pv_basissatz)
+        vspkvpv = zre4vpr_kv * (kv_satz + pv_satz) / 100
+
+    vsp = vspkvpv + vspr
+
+    # --- MVSPHB (S. 28): Hoechstbetrag ueber die Arbeitslosenversicherung ------
+    # Aufrufbedingung aus UPEVP: nur bei ALV != 1 UND STKL != 6.
+    if alv_pflichtversichert and steuerklasse != 6:
+        # ZRE4VPR NEU berechnen. Wer hier zre4vpr_kv wiederverwendet, nimmt die
+        # KV/PV-Grenze statt der RV/ALV-Grenze — das Ergebnis ist dann zu klein,
+        # aber nicht offensichtlich falsch.
+        zre4vpr_alv = min(brutto_jahr, _BBGRV_JAHR)
+        vspalv = AV_AN * zre4vpr_alv / 100
+        vsphb = vspalv + vspkvpv
+        if vsphb > _VSPHB_MAX:
+            vsphb = _VSPHB_MAX
+        vspn = vspr + vsphb
+        if vspn > vsp:
+            vsp = vspn
+
+    return vsp
 
 
 def _berechne_pv_satz(

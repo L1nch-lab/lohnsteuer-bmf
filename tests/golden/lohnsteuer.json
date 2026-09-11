@@ -8,12 +8,12 @@
     "brutto_jahr": 60000.0, "steuerklasse": 3, "bundesland": "Nordrhein-Westfalen",
     "mit_kirchensteuer": false, "kinder": 0, "geburtsjahr": 1990, "kv_zusatzbeitrag": 2.9,
     "ist_sachsen": false, "jahr": 2026,
-    "erwartet": {"lohnsteuer_monat": 401.0, "soli_monat": 0.0, "kirchensteuer_monat": 0.0, "zve_jahr": 46608.0, "vorsorgepauschale": 12090.0}  },
+    "erwartet": {"lohnsteuer_monat": 401.83, "soli_monat": 0.0, "kirchensteuer_monat": 0.0, "zve_jahr": 46644.0, "vorsorgepauschale": 12090.0}  },
   {
     "brutto_jahr": 60000.0, "steuerklasse": 5, "bundesland": "Nordrhein-Westfalen",
     "mit_kirchensteuer": false, "kinder": 0, "geburtsjahr": 1990, "kv_zusatzbeitrag": 2.9,
     "ist_sachsen": false, "jahr": 2026,
-    "erwartet": {"lohnsteuer_monat": 1280.34, "soli_monat": 0.0, "kirchensteuer_monat": 0.0, "zve_jahr": 46644.0, "vorsorgepauschale": 12090.0}  },
+    "erwartet": {"lohnsteuer_monat": 1280.33, "soli_monat": 0.0, "kirchensteuer_monat": 0.0, "zve_jahr": 46644.0, "vorsorgepauschale": 12090.0}  },
   {
     "brutto_jahr": 36000.0, "steuerklasse": 1, "bundesland": "Nordrhein-Westfalen",
     "mit_kirchensteuer": true, "kinder": 0, "geburtsjahr": 1990, "kv_zusatzbeitrag": 2.9,
@@ -33,5 +33,5 @@
     "brutto_jahr": 24000.0, "steuerklasse": 6, "bundesland": "Nordrhein-Westfalen",
     "mit_kirchensteuer": false, "kinder": 0, "geburtsjahr": 1990, "kv_zusatzbeitrag": 2.9,
     "ist_sachsen": false, "jahr": 2026,
-    "erwartet": {"lohnsteuer_monat": 342.42, "soli_monat": 0.0, "kirchensteuer_monat": 0.0, "zve_jahr": 19164.0, "vorsorgepauschale": 4836.0}  }
+    "erwartet": {"lohnsteuer_monat": 342.33, "soli_monat": 0.0, "kirchensteuer_monat": 0.0, "zve_jahr": 19164.0, "vorsorgepauschale": 4836.0}  }
 ]

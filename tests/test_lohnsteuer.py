@@ -116,9 +116,14 @@ def test_berechne_zve_sk6_kein_anp_sap() -> None:
     assert berechne_zve(60000.0, steuerklasse=6) > berechne_zve(60000.0, steuerklasse=1)
 
 
-def test_berechne_zve_sk3_doppelter_sap() -> None:
-    """SK3 (Splitting): doppelter SAP → niedrigeres zvE als SK1."""
-    assert berechne_zve(60000.0, steuerklasse=3) < berechne_zve(60000.0, steuerklasse=1)
+def test_berechne_zve_sk3_einfacher_sap() -> None:
+    """SK3: SAP bleibt 36 EUR, das zvE ist dasselbe wie in SK1.
+
+    § 39b Abs. 2 S. 5 Nr. 2 EStG verweist auf § 10c SATZ 1 (36 EUR); die
+    Verdopplung aus Satz 2 gilt nur der Veranlagung. Das Splitting sitzt im
+    Tarif. Bis 2026.2 stand hier der umgekehrte Test und hielt den Fehler fest.
+    """
+    assert berechne_zve(60000.0, steuerklasse=3) == berechne_zve(60000.0, steuerklasse=1)
 
 
 # --- MST5_6: alle Stufen der Steuerklasse V/VI (Differenzmethode) ---

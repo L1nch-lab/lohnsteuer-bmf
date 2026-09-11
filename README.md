@@ -66,6 +66,37 @@ print(ergebnis)
 #  'zve_jahr': 46644.0, 'vorsorgepauschale': 12090.0}
 ```
 
+### Privat krankenversichert (PKV)
+
+Bei PKV zählt für die Vorsorgepauschale dein Basisbeitrag (Kranken- plus
+Pflege-Pflichtversicherung, ohne Wahlleistungen) abzüglich des steuerfreien
+Arbeitgeberzuschusses. Beide Beträge gibst du wie im PAP als **Monatsbetrag in
+Cent** an:
+
+```python
+ergebnis = berechne_lohnsteuer_pap(
+    brutto_jahr=60_000.0,
+    steuerklasse=1,
+    bundesland="Nordrhein-Westfalen",
+    mit_kirchensteuer=False,
+    kinder=0,
+    geburtsjahr=1990,
+    kv_zusatzbeitrag=2.9,        # wird bei PKV nicht verwendet
+    ist_sachsen=False,
+    jahr=2026,
+    pkv=True,
+    pkpv_monat_cent=60_000,      # 600 € Basisbeitrag KV + PV (PAP: PKPV)
+    pkpvagz_monat_cent=30_000,   # 300 € AG-Zuschuss (PAP: PKPVAGZ)
+)
+print(ergebnis["lohnsteuer_monat"])  # 866.0, identisch mit dem BMF-Steuerrechner
+```
+
+Zwei weitere Merker aus dem PAP gibt es als optionale Schlüsselwort-Argumente:
+`alv_pflichtversichert=False` (PAP `ALV = 1`) und `rv_pflichtversichert=False`
+(PAP `KRV = 1`, z. B. beherrschende Gesellschafter-Geschäftsführer). Den
+Arbeitgeberzuschuss rechnet das Paket nicht selbst aus. Du übergibst ihn so, wie
+er auf der Abrechnung steht.
+
 ### Einkommensteuer-Tarif (§32a EStG)
 
 ```python
@@ -96,7 +127,7 @@ kirchensteuer(10_000, "Bayern")            # 800.0
 
 | Funktion | Rechtsgrundlage |
 |---|---|
-| `berechne_lohnsteuer_pap` | BMF-Programmablaufplan 2026 (BMF-Schreiben v. 12.11.2025) |
+| `berechne_lohnsteuer_pap` | BMF-Programmablaufplan 2026 (BMF-Schreiben v. 12.11.2025), gesetzlich und privat krankenversichert |
 | `berechne_zve` | zu versteuerndes Einkommen aus Brutto (Vorsorgepauschale etc.) |
 | `berechne_einkommensteuer_tarif` | §32a EStG inkl. Grenz-/Durchschnittssteuersatz |
 | `einkommensteuer` / `einkommensteuer_splitting` | §32a Abs. 1 / Abs. 5 EStG |
@@ -160,7 +191,8 @@ result = berechne_lohnsteuer_pap(
 print(result["lohnsteuer_monat"])  # 782.42  (monthly wage tax in EUR)
 ```
 
-What's included: monthly **Lohnsteuer** (BMF-PAP 2026), the **§32a income-tax tariff**
+What's included: monthly **Lohnsteuer** (BMF-PAP 2026, statutory and private health
+insurance via `pkv=True`), the **§32a income-tax tariff**
 (incl. spouse splitting, marginal/average rates), **solidarity surcharge** and
 **church tax**. Tax years 2024–2026 — all three verified against official primary
 sources (as of 2026-06-07). Python ≥ 3.10, zero dependencies.

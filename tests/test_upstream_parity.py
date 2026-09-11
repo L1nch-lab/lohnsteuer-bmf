@@ -125,3 +125,44 @@ def test_parity_lohnsteuer_pap(
         jahr=jahr,
     )
     assert berechne_lohnsteuer_pap(**kw) == up_lp.berechne_lohnsteuer_pap(**kw)
+
+
+# (brutto, stkl, pkpv_cent, pkpvagz_cent, alv_pflicht, rv_pflicht)
+_PKV_FAELLE = [
+    (60000.0, 1, 80_000, 40_000, True, True),
+    (60000.0, 1, 25_000, 12_500, True, True),
+    (60000.0, 1, 25_000, 12_500, False, True),
+    (60000.0, 1, 20_000, 40_000, True, True),
+    (90000.0, 3, 70_000, 35_000, True, True),
+    (40000.0, 5, 50_000, 25_000, True, True),
+    (60000.0, 6, 80_000, 0, True, True),
+    (120000.0, 1, 90_000, 0, False, False),
+    (13200.0, 1, 0, 0, True, True),
+]
+
+
+@pytest.mark.parametrize("pkv", (True, False))
+@pytest.mark.parametrize("brutto,sk,pkpv,agz,alv,krv", _PKV_FAELLE)
+def test_parity_lohnsteuer_pap_pkv_und_merker(
+    brutto: float, sk: int, pkpv: int, agz: int, alv: bool, krv: bool, pkv: bool
+) -> None:
+    from lohnsteuer_bmf import berechne_lohnsteuer_pap
+
+    up_lp = _UPSTREAM[2]
+    kw = dict(
+        brutto_jahr=brutto,
+        steuerklasse=sk,
+        bundesland="Nordrhein-Westfalen",
+        mit_kirchensteuer=False,
+        kinder=0,
+        geburtsjahr=1990,
+        kv_zusatzbeitrag=2.9,
+        ist_sachsen=False,
+        jahr=2026,
+        pkv=pkv,
+        pkpv_monat_cent=pkpv,
+        pkpvagz_monat_cent=agz,
+        alv_pflichtversichert=alv,
+        rv_pflichtversichert=krv,
+    )
+    assert berechne_lohnsteuer_pap(**kw) == up_lp.berechne_lohnsteuer_pap(**kw)

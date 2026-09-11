@@ -7,6 +7,38 @@ die Versionierung folgt [CalVer](https://calver.org/) (`JAHR.MINOR`, am Steuerja
 
 ## [Unreleased]
 
+## [2026.3] - 2026-09-11
+
+### Added
+
+- **Privat Krankenversicherte (PKV).** `berechne_lohnsteuer_pap()` nimmt die
+  PAP-Inputs jetzt als optionale Schlüsselwort-Argumente an: `pkv`,
+  `pkpv_monat_cent` (PAP `PKPV`), `pkpvagz_monat_cent` (PAP `PKPVAGZ`),
+  `alv_pflichtversichert` (PAP `ALV`) und `rv_pflichtversichert` (PAP `KRV`).
+  Umgesetzt ist der PKV-Zweig in MVSPKVPV (§ 39b Abs. 2 S. 5 Nr. 3 Buchst. d
+  EStG): Beitrag minus Zuschuss, nie negativ, in Steuerklasse VI null.
+  Ohne die neuen Argumente rechnet die Funktion wie bisher gesetzlich versichert.
+  Danke an @Physik42 für die Anregung (#1).
+- **Höchstbetragsberechnung MVSPHB** (§ 39b Abs. 2 S. 5 Nr. 3 Buchst. e EStG):
+  ALV-Teilbetrag plus KV/PV-Teilbetrag, gedeckelt auf 1.900 €, der größere
+  Weg gewinnt. Nur bei `ALV != 1` und Steuerklasse I bis V. Bei PKV mit
+  günstigem Tarif kann das bei vollem Grenzsteuersatz binden, bei gesetzlich
+  Versicherten nur unterhalb des Grundfreibetrags.
+
+### Fixed
+
+- **Steuerklasse III: Sonderausgaben-Pauschbetrag 36 € statt 72 €.** § 39b
+  Abs. 2 S. 5 Nr. 2 EStG verweist auf § 10c Satz 1; die Verdopplung gilt nur
+  der Veranlagung, das Splitting sitzt im Tarif. Die Lohnsteuer lag rund
+  0,50 bis 0,83 €/Monat zu niedrig. Betrifft auch `berechne_zve()`.
+- **Steuerklasse V/VI: Euro-Abrundung in MST5_6/UP5_6** wie im PAP (`ZZX`,
+  `ST`, `MIST` sind dort ganze Euro). Die Lohnsteuer lag um einige Cent
+  pro Monat zu hoch (bis rund 0,11 €).
+
+Beide Fixes und der PKV-Zweig sind gegen die offizielle BMF-Schnittstelle
+(LSt2026ext) geprüft: 20 Fälle über alle Steuerklassen, GKV und PKV,
+Abweichung höchstens 0,01 €/Monat.
+
 ## [2026.2] - 2026-08-03
 
 ### Fixed
