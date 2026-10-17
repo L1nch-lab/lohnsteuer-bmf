@@ -28,7 +28,7 @@ verifiziert (§32a EStG, BMF-PAP 2026, SV-Rechengrößenverordnung 2026).
 - 📴 **Offline** — keine Netzwerk-Calls, kein PAP-XML-Parsing zur Laufzeit
 - 🧮 **Primärquellen-verifiziert** — §32a EStG, BMF-PAP 2026, SV-RechGrV 2026
 - 🏷️ **Vollständig typisiert** — PEP 561 (`py.typed`), `mypy --strict`
-- 🐍 **Python 3.10 – 3.14** — getestet auf Linux, Windows und macOS
+- 🐍 **Python 3.10 – 3.14** — getestet auf Linux, reines Python ohne plattformabhängigen Code
 
 > 🇬🇧 **English speakers:** scroll down for the [English section](#english).
 
